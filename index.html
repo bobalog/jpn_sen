@@ -1,0 +1,437 @@
+import React, { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Heart, Ribbon, Plus, RotateCcw, CheckCircle2, XCircle, BookHeart, Sparkles, Trash2 } from "lucide-react";
+
+const seedDeck = {
+  "1과": [
+    { ko: "3kg나 살이 쪄버렸습니다.", jp: "３キロも太ってしまいました。" },
+    { ko: "일본 드라마를 보고 있습니다.", jp: "日本のドラマを見ています。" },
+    { ko: "아침에 일어나서, 어머니께 메일을 보냈습니다.", jp: "朝起きてから、母にメールを送りました。" },
+    { ko: "대학생이 된 후에, 3kg나 살이 쪄버렸습니다.", jp: "大学生になってから、３キロも太ってしまいました。" },
+    { ko: "그가 오지 않아서 걱정했습니다.", jp: "彼が来なくて心配しました。" },
+  ],
+  "2과": [
+    { ko: "다 같이 춤추기도 하고 불꽃놀이를 보기도 합니다.", jp: "みんなで踊ったり花火を見たりします。" },
+    { ko: "교실과 도서관을 갔다가 오갔다 했습니다.", jp: "教室と図書館を行ったり来たりしました。" },
+    { ko: "돈이 있으면 컴퓨터를 사고 싶습니다.", jp: "お金があったらコンピューターを買いたいです。" },
+    { ko: "왼쪽으로 돌면 꽃집이 있습니다.", jp: "左に曲がると花屋があります。" },
+    { ko: "친구 집에 가기 전에 전화를 합니다.", jp: "友だちの家に行く前に電話をします。" },
+    { ko: "시험이 끝난 후에 놀러 가고 싶습니다.", jp: "テストが終わった後、遊びに行きたいです。" },
+  ],
+  "3과": [
+    { ko: "기념품을 너무 많이 샀습니다.", jp: "お土産を買いすぎました。" },
+    { ko: "다나카 씨는 저기에 앉아 있습니다.", jp: "田中さんはあそこに座っています。" },
+    { ko: "그 아래에 가격이 붙어 있습니다.", jp: "その下にねだんがつけてあります。" },
+    { ko: "이 씨의 펜은 쓰기 쉽네요.", jp: "イさんのペンは書きやすいですね。" },
+    { ko: "이 빵은 딱딱해서 먹기 어렵습니다.", jp: "このパンはかたくて食べにくいです。" },
+    { ko: "어제는 술을 너무 많이 마셨습니다.", jp: "昨日はお酒を飲みすぎました。" },
+  ],
+  "4과": [
+    { ko: "형편이 괜찮다면 보러 와 주세요.", jp: "都合がよければ見に来てください。" },
+    { ko: "머리가 아팠어요.", jp: "頭が痛かったんです。" },
+    { ko: "일본어는 매일 연습하면 잘하게 됩니다.", jp: "日本語は毎日練習すれば上手になります。" },
+    { ko: "너무 걱정하지 말고 즐겨 주세요.", jp: "あまり心配しないで楽しんでください。" },
+    { ko: "아침밥은 먹어야 합니다.", jp: "朝ご飯は食べなければなりません。" },
+  ],
+  "5과": [
+    { ko: "응원하러 와줘서 기뻤어요.", jp: "応援に来てくれてうれしかったです。" },
+    { ko: "모리 씨는 임 씨에게 책을 주었습니다.", jp: "森さんはイムさんに本をあげました。" },
+    { ko: "선배는 나에게 콘서트 티켓을 주었습니다.", jp: "先輩は私にコンサートチケットをくれました。" },
+    { ko: "기무라 씨에게 여행 선물을 받았습니다.", jp: "木村さんに旅行のお土産をもらいました。" },
+    { ko: "다음 주, 고베로 출장을 가게 되었습니다.", jp: "来週、神戸へ出張することになりました。" },
+  ],
+};
+
+function shuffle(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function splitJapaneseSentence(sentence) {
+  return sentence
+    .replace(/。/g, "")
+    .match(/[一-龯ぁ-んァ-ヶーA-Za-z0-9０-９]+|[、。！？]/g)?.filter(Boolean) || [sentence.replace(/。/g, "")];
+}
+
+function buildDeck(deckMap, customCards) {
+  const merged = { ...deckMap };
+  Object.entries(customCards).forEach(([key, cards]) => {
+    merged[key] = [...(merged[key] || []), ...cards];
+  });
+  return merged;
+}
+
+function sentenceId(category, jp, index) {
+  return `${category}-${index}-${jp}`;
+}
+
+export default function JapaneseSentenceMemoryGame() {
+  const [customCards, setCustomCards] = useState({});
+  const [category, setCategory] = useState("1과");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bank, setBank] = useState([]);
+  const [answer, setAnswer] = useState([]);
+  const [result, setResult] = useState(null);
+  const [completed, setCompleted] = useState({});
+  const [wrongNotes, setWrongNotes] = useState([]);
+  const [showMeaning, setShowMeaning] = useState(true);
+  const [newCategory, setNewCategory] = useState("마지막 시험 총정리대비!!");
+  const [newKo, setNewKo] = useState("");
+  const [newJp, setNewJp] = useState("");
+
+  const deck = useMemo(() => buildDeck(seedDeck, customCards), [customCards]);
+  const categories = useMemo(() => {
+    const keys = Object.keys(deck);
+    return keys.includes("마지막 시험 총정리대비!!")
+      ? keys
+      : [...keys, "마지막 시험 총정리대비!!"];
+  }, [deck]);
+
+  const activeList = deck[category] || [];
+  const current = activeList[currentIndex] || null;
+
+  React.useEffect(() => {
+    if (!current) {
+      setBank([]);
+      setAnswer([]);
+      setResult(null);
+      return;
+    }
+    const tokens = splitJapaneseSentence(current.jp);
+    setBank(shuffle(tokens));
+    setAnswer([]);
+    setResult(null);
+  }, [category, currentIndex, current?.jp]);
+
+  const totalCount = activeList.length;
+  const solvedCount = Object.keys(completed).filter((key) => key.startsWith(`${category}-`) && completed[key]).length;
+  const progress = totalCount ? Math.round((solvedCount / totalCount) * 100) : 0;
+
+  const handlePick = (token, idx) => {
+    if (result === "correct") return;
+    setAnswer((prev) => [...prev, token]);
+    setBank((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleRemove = (token, idx) => {
+    if (result === "correct") return;
+    setBank((prev) => [...prev, token]);
+    setAnswer((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const resetLine = () => {
+    setBank((prev) => shuffle([...prev, ...answer]));
+    setAnswer([]);
+    setResult(null);
+  };
+
+  const checkAnswer = () => {
+    if (!current) return;
+    const user = `${answer.join("")}。`;
+    const isCorrect = user === current.jp;
+    const id = sentenceId(category, current.jp, currentIndex);
+
+    if (isCorrect) {
+      setResult("correct");
+      setCompleted((prev) => ({ ...prev, [id]: true }));
+      return;
+    }
+
+    setResult("wrong");
+    setWrongNotes((prev) => {
+      const exists = prev.some((item) => item.id === id);
+      if (exists) return prev;
+      return [
+        {
+          id,
+          category,
+          ko: current.ko,
+          jp: current.jp,
+          user: user.replace(/。$/, ""),
+        },
+        ...prev,
+      ];
+    });
+  };
+
+  const nextCard = () => {
+    if (currentIndex < totalCount - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      setCurrentIndex(0);
+    }
+  };
+
+  const prevCard = () => {
+    if (currentIndex > 0) setCurrentIndex((prev) => prev - 1);
+  };
+
+  const changeCategory = (next) => {
+    setCategory(next);
+    setCurrentIndex(0);
+  };
+
+  const addCard = () => {
+    const trimmedCategory = newCategory.trim() || "마지막 시험 총정리대비!!";
+    const trimmedKo = newKo.trim();
+    const trimmedJp = newJp.trim().endsWith("。") ? newJp.trim() : `${newJp.trim()}。`;
+    if (!trimmedKo || !newJp.trim()) return;
+
+    setCustomCards((prev) => ({
+      ...prev,
+      [trimmedCategory]: [...(prev[trimmedCategory] || []), { ko: trimmedKo, jp: trimmedJp }],
+    }));
+    setCategory(trimmedCategory);
+    setCurrentIndex(0);
+    setNewKo("");
+    setNewJp("");
+  };
+
+  const removeWrongNote = (id) => {
+    setWrongNotes((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-rose-50 to-fuchsia-50 p-4 md:p-8">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-3xl border border-pink-200 bg-white/85 p-6 shadow-xl backdrop-blur"
+        >
+          <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-pink-100 blur-2xl" />
+          <div className="absolute left-8 top-2 text-pink-300"><Ribbon className="h-8 w-8" /></div>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="mb-2 flex items-center gap-2 text-pink-500">
+                <Sparkles className="h-5 w-5" />
+                <span className="text-sm font-semibold">귀염뽀짝 암기 게임</span>
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight text-pink-700">일본어 문장 카드 배치 연습장</h1>
+              <p className="mt-2 text-sm text-slate-600">해석을 보고 일본어 조각을 순서대로 배치해 보자 💖 정답이면 통과, 오답이면 오답노트에 저장돼!</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 md:w-[320px]">
+              <Card className="rounded-2xl border-pink-200 bg-pink-50 shadow-sm">
+                <CardContent className="p-4 text-center">
+                  <p className="text-xs text-pink-600">현재 카테고리</p>
+                  <p className="mt-1 font-bold text-pink-700">{category}</p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl border-rose-200 bg-rose-50 shadow-sm">
+                <CardContent className="p-4 text-center">
+                  <p className="text-xs text-rose-600">진도</p>
+                  <p className="mt-1 font-bold text-rose-700">{solvedCount} / {totalCount}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </motion.div>
+
+        <Tabs value={category} onValueChange={changeCategory} className="space-y-5">
+          <div className="overflow-x-auto">
+            <TabsList className="h-auto w-max min-w-full gap-2 rounded-2xl bg-white/80 p-2 shadow-sm">
+              {categories.map((cat) => (
+                <TabsTrigger
+                  key={cat}
+                  value={cat}
+                  className="rounded-xl px-4 py-2 data-[state=active]:bg-pink-500 data-[state=active]:text-white"
+                >
+                  {cat}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          {categories.map((cat) => (
+            <TabsContent key={cat} value={cat} className="space-y-5">
+              <div className="grid gap-5 lg:grid-cols-[1.4fr_0.6fr]">
+                <Card className="rounded-3xl border-pink-200 bg-white/90 shadow-lg">
+                  <CardHeader className="pb-3">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2 text-pink-700">
+                          <BookHeart className="h-5 w-5" />
+                          문장 순서 배치
+                        </CardTitle>
+                        <p className="mt-2 text-sm text-slate-500">해석을 먼저 보고, 아래 조각을 눌러서 문장을 완성해 줘.</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className="rounded-full bg-pink-100 px-3 py-1 text-pink-700 hover:bg-pink-100">{currentIndex + 1} / {totalCount || 0}</Badge>
+                        <Button variant="outline" className="rounded-full border-pink-200 text-pink-700" onClick={() => setShowMeaning((prev) => !prev)}>
+                          {showMeaning ? "해석 숨기기" : "해석 보기"}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="pt-3">
+                      <Progress value={progress} className="h-3" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-5">
+                    {!current ? (
+                      <div className="rounded-2xl border border-dashed border-pink-200 bg-pink-50 p-8 text-center text-slate-500">
+                        아직 카드가 없어요. 아래에서 암기 문장카드를 추가해 줘 💗
+                      </div>
+                    ) : (
+                      <>
+                        <motion.div layout className="rounded-3xl border border-rose-200 bg-gradient-to-r from-pink-50 to-rose-50 p-5">
+                          <div className="mb-3 flex items-center gap-2 text-rose-500">
+                            <Heart className="h-4 w-4 fill-current" />
+                            <span className="text-xs font-semibold">문제</span>
+                          </div>
+                          <p className="text-sm text-slate-500">한국어 해석</p>
+                          <p className="mt-2 text-xl font-bold leading-relaxed text-slate-800">
+                            {showMeaning ? current.ko : "해석 숨김 모드 ✨"}
+                          </p>
+                        </motion.div>
+
+                        <div className="rounded-3xl border border-pink-200 bg-white p-4">
+                          <div className="mb-2 flex items-center justify-between">
+                            <p className="text-sm font-semibold text-pink-700">내가 만든 문장</p>
+                            <Button variant="ghost" className="rounded-full text-pink-600 hover:bg-pink-50" onClick={resetLine}>
+                              <RotateCcw className="mr-1 h-4 w-4" /> 다시
+                            </Button>
+                          </div>
+                          <div className="min-h-[92px] rounded-2xl border border-dashed border-pink-200 bg-pink-50/60 p-3">
+                            <div className="flex flex-wrap gap-2">
+                              {answer.length === 0 ? (
+                                <span className="text-sm text-slate-400">조각을 눌러서 여기에 순서대로 쌓아줘 💕</span>
+                              ) : (
+                                answer.map((token, idx) => (
+                                  <button
+                                    key={`${token}-${idx}`}
+                                    onClick={() => handleRemove(token, idx)}
+                                    className="rounded-full border border-pink-200 bg-white px-3 py-2 text-sm font-medium text-pink-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-pink-100"
+                                  >
+                                    {token}
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="rounded-3xl border border-fuchsia-200 bg-fuchsia-50/60 p-4">
+                          <p className="mb-3 text-sm font-semibold text-fuchsia-700">문장 조각 카드</p>
+                          <div className="flex flex-wrap gap-2">
+                            {bank.map((token, idx) => (
+                              <button
+                                key={`${token}-${idx}`}
+                                onClick={() => handlePick(token, idx)}
+                                className="rounded-full border border-fuchsia-200 bg-white px-3 py-2 text-sm font-medium text-fuchsia-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-fuchsia-100"
+                              >
+                                {token}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-3">
+                          <Button onClick={checkAnswer} className="rounded-full bg-pink-500 px-6 hover:bg-pink-600">제출하기</Button>
+                          <Button onClick={prevCard} variant="outline" className="rounded-full border-pink-200 text-pink-700">이전 문장</Button>
+                          <Button onClick={nextCard} variant="outline" className="rounded-full border-pink-200 text-pink-700">다음 문장</Button>
+                        </div>
+
+                        {result === "correct" && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-700">
+                            <div className="flex items-center gap-2 font-semibold">
+                              <CheckCircle2 className="h-5 w-5" /> 정답이야! 아주 잘했어 🌟
+                            </div>
+                            <p className="mt-2 text-sm">이 문장은 체크 완료됐어. 다음 카드로 넘어가도 돼!</p>
+                          </motion.div>
+                        )}
+
+                        {result === "wrong" && current && (
+                          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-rose-700">
+                            <div className="flex items-center gap-2 font-semibold">
+                              <XCircle className="h-5 w-5" /> 아깝다! 오답노트에 저장했어 💗
+                            </div>
+                            <p className="mt-2 text-sm">정답: {current.jp}</p>
+                          </motion.div>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+
+                <div className="space-y-5">
+                  <Card className="rounded-3xl border-rose-200 bg-white/90 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="text-rose-700">오답노트</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {wrongNotes.length === 0 ? (
+                        <p className="text-sm text-slate-500">아직 저장된 오답이 없어 💕</p>
+                      ) : (
+                        wrongNotes.map((item) => (
+                          <div key={item.id} className="rounded-2xl border border-rose-200 bg-rose-50 p-3">
+                            <div className="mb-2 flex items-center justify-between gap-2">
+                              <Badge className="bg-white text-rose-700 hover:bg-white">{item.category}</Badge>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-rose-500 hover:bg-white" onClick={() => removeWrongNote(item.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <p className="text-sm font-semibold text-slate-700">해석: {item.ko}</p>
+                            <p className="mt-2 text-xs text-slate-500">정답</p>
+                            <p className="text-sm text-rose-700">{item.jp}</p>
+                            <p className="mt-2 text-xs text-slate-500">내 답</p>
+                            <p className="text-sm text-slate-700">{item.user || "(비어 있음)"}</p>
+                          </div>
+                        ))
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card className="rounded-3xl border-fuchsia-200 bg-white/90 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-fuchsia-700">
+                        <Plus className="h-5 w-5" /> 암기 문장카드 추가
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="카테고리 이름" className="rounded-2xl border-fuchsia-200" />
+                      <Input value={newKo} onChange={(e) => setNewKo(e.target.value)} placeholder="한국어 해석" className="rounded-2xl border-fuchsia-200" />
+                      <Input value={newJp} onChange={(e) => setNewJp(e.target.value)} placeholder="일본어 문장" className="rounded-2xl border-fuchsia-200" />
+                      <Button onClick={addCard} className="w-full rounded-2xl bg-fuchsia-500 hover:bg-fuchsia-600">추가하기</Button>
+                      <p className="text-xs leading-relaxed text-slate-500">새 카테고리도 바로 만들 수 있어. 예: 마지막 시험 총정리대비!! ✨</p>
+                    </CardContent>
+                  </Card>
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full rounded-2xl border-pink-200 text-pink-700">전체 문장 보기</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl rounded-3xl border-pink-200">
+                      <DialogHeader>
+                        <DialogTitle className="text-pink-700">{category} 전체 문장</DialogTitle>
+                      </DialogHeader>
+                      <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-2">
+                        {(deck[category] || []).map((item, idx) => (
+                          <div key={`${item.jp}-${idx}`} className="rounded-2xl border border-pink-100 bg-pink-50 p-3">
+                            <p className="text-xs text-slate-500">{idx + 1}번</p>
+                            <p className="font-medium text-slate-800">{item.ko}</p>
+                            <p className="mt-1 text-pink-700">{item.jp}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    </div>
+  );
+}
