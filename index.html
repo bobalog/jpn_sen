@@ -28,7 +28,6 @@
       font-family: "Arial", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       color: var(--text);
       background: linear-gradient(180deg, var(--bg1), var(--bg2));
-      min-height: 100vh;
     }
 
     .wrap {
@@ -45,29 +44,54 @@
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
-      text-align: center;
     }
 
-    h1 { margin: 0 0 8px; color: var(--pink4); font-size: 28px; }
-    .sub { margin: 0; line-height: 1.6; font-size: 15px; }
+    .hero::before, .hero::after {
+      content: "🎀";
+      position: absolute;
+      font-size: 44px;
+      opacity: 0.18;
+    }
+    .hero::before { top: 8px; right: 18px; }
+    .hero::after { bottom: 8px; left: 18px; }
 
-    .tabs {
+    h1 {
+      margin: 0 0 8px;
+      color: var(--pink4);
+      font-size: 32px;
+    }
+
+    .sub {
+      margin: 0;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .tabs, .small-tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 20px;
-      justify-content: center;
+    }
+
+    .tab-btn, .small-tab-btn, .btn {
+      border: none;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 700;
     }
 
     .tab-btn {
-      border: none;
-      cursor: pointer;
-      transition: 0.2s;
-      font-weight: 700;
       background: var(--white);
       border: 2px solid var(--pink1);
       border-radius: 999px;
-      padding: 8px 16px;
+      padding: 10px 16px;
       color: var(--pink4);
     }
 
@@ -96,105 +120,274 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
       margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-block;
+      background: #fff;
+      border: 2px solid var(--pink1);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--pink4);
+    }
+
+    .meaning-box, .answer-box, .bank-box, .wrong-item, .info-box {
+      border-radius: 22px;
+      padding: 16px;
     }
 
     .meaning-box {
       background: linear-gradient(90deg, #fff5fa, #fff7fd);
       border: 2px solid #ffd9e8;
-      border-radius: 22px;
-      padding: 16px;
       margin-bottom: 14px;
     }
 
-    .meaning-text { font-size: 22px; font-weight: 800; }
-
-    .answer-box, .bank-box {
-      border-radius: 22px;
-      padding: 16px;
-      margin-bottom: 14px;
-      min-height: 100px;
+    .meaning-label, .section-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--pink4);
+      margin-bottom: 8px;
     }
 
-    .answer-box { background: #fffafb; border: 2px dashed var(--pink2); }
-    .bank-box { background: #fff8fd; border: 2px solid #f3c9ff; }
+    .meaning-text {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
 
-    .token-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+    .answer-box {
+      background: #fffafb;
+      border: 2px dashed var(--pink2);
+      min-height: 110px;
+      margin-bottom: 14px;
+    }
+
+    .token-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 48px;
+      align-items: flex-start;
+    }
 
     .token {
       background: white;
       border: 2px solid #ffc9df;
       color: var(--pink4);
       border-radius: 999px;
-      padding: 8px 14px;
+      padding: 10px 14px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       user-select: none;
-      transition: 0.2s;
     }
 
-    .token:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(255, 159, 200, 0.3); }
+    .token:hover, .btn:hover, .tab-btn:hover, .small-tab-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.98);
+    }
 
-    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .bank-box {
+      background: #fff8fd;
+      border: 2px solid #f3c9ff;
+      margin-bottom: 14px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
     .btn {
-      border: none; border-radius: 999px; padding: 12px 20px;
-      font-weight: 700; cursor: pointer; transition: 0.2s;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-size: 14px;
     }
-    .btn.primary { background: var(--pink3); color: white; }
-    .btn.soft { background: white; color: var(--pink4); border: 2px solid var(--pink1); }
-    .btn:active { transform: scale(0.95); }
 
-    .result { margin-top: 14px; padding: 14px; border-radius: 20px; font-weight: 800; }
-    .result.correct { background: var(--mint); color: #2f8d57; border: 2px solid #bcefd0; }
-    .result.wrong { background: var(--rose); color: #d05b7c; border: 2px solid #ffc6d2; }
+    .btn.primary {
+      background: var(--pink3);
+      color: white;
+    }
 
-    .progress-bar { width: 100%; height: 10px; background: #ffe7f1; border-radius: 999px; overflow: hidden; margin: 10px 0; }
-    .progress-fill { height: 100%; background: var(--pink3); width: 0%; transition: 0.3s; }
+    .btn.soft {
+      background: white;
+      color: var(--pink4);
+      border: 2px solid var(--pink1);
+    }
 
-    .wrong-item, .all-item {
-      background: #fff8fb; border: 2px solid #ffd6e7; border-radius: 18px;
-      padding: 12px; margin-bottom: 10px;
+    .btn.full { width: 100%; }
+
+    .result {
+      margin-top: 14px;
+      font-weight: 800;
+      border-radius: 20px;
+      padding: 14px;
+      line-height: 1.6;
+    }
+
+    .result.correct {
+      background: var(--mint);
+      color: #2f8d57;
+      border: 2px solid #bcefd0;
+    }
+
+    .result.wrong {
+      background: var(--rose);
+      color: #d05b7c;
+      border: 2px solid #ffc6d2;
+    }
+
+    .progress-wrap {
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 14px;
+      background: #ffe7f1;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #ffd0e3;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff94c2, #ff63aa);
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    .small-tab-btn {
+      background: #fff;
+      border: 2px solid #ffd6e7;
+      color: var(--pink4);
+      border-radius: 16px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .small-tab-btn.active {
+      background: #ffe0ee;
+    }
+
+    .wrong-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 340px;
+      overflow: auto;
+    }
+
+    .wrong-item {
+      background: #fff8fb;
+      border: 2px solid #ffd6e7;
+    }
+
+    .mini {
+      font-size: 12px;
+      color: #94647d;
+    }
+
+    .add-form {
+      display: grid;
+      gap: 10px;
     }
 
     .input, .textarea {
-      width: 100%; border: 2px solid #ffd6e7; border-radius: 14px;
-      padding: 10px; margin-bottom: 8px; outline: none;
+      width: 100%;
+      border: 2px solid #ffd6e7;
+      background: white;
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--text);
     }
 
-    @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } }
+    .textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .all-list {
+      display: grid;
+      gap: 10px;
+      max-height: 280px;
+      overflow: auto;
+    }
+
+    .all-item {
+      border: 2px solid #ffdce9;
+      background: #fff9fc;
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .muted {
+      color: #ad7c95;
+      font-size: 13px;
+    }
+
+    .footer-tip {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #9a6d86;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 880px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .meaning-text {
+        font-size: 21px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <section class="hero">
-      <h1>🎀 일본어 문장 조각 맞추기</h1>
-      <p class="sub">문장을 조사 단위로 쪼개서 배치해봐! 정답엔 꼭 마침표(。)가 포함되어야 해 ✨</p>
+      <h1>🎀 일본어 문장 카드 배치 연습장</h1>
+      <p class="sub">해석을 보고 일본어 문장을 <b>조각 순서대로 배치</b>해서 외우는 사이트야 💖<br>정답은 통과, 오답은 오답노트에 저장되고, 나중에 새 문장도 직접 추가할 수 있어!</p>
     </section>
 
-    <div class="tabs" id="categoryTabs"></div>
+    <div class="top-grid">
+      <div class="tabs" id="categoryTabs"></div>
+    </div>
 
     <div class="layout">
-      <main class="card">
+      <section class="card">
         <div class="title-row">
-          <div style="font-weight:800; color:var(--pink4);">🌟 문제</div>
-          <div id="cardCounter" style="font-weight:bold;">1 / 1</div>
+          <div>
+            <div style="font-size:22px;font-weight:800;color:var(--pink4);">🌟 문장 순서 배치</div>
+            <div class="muted">해석을 먼저 보고, 아래 조각을 눌러 문장을 완성해줘</div>
+          </div>
+          <div class="pill" id="cardCounter">1 / 1</div>
         </div>
 
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="muted" id="progressText" style="margin-top:6px;">진도 0%</div>
+        </div>
 
         <div class="meaning-box">
-          <div style="font-size:12px; color:var(--pink4); margin-bottom:5px;">해석</div>
+          <div class="meaning-label">해석</div>
           <div class="meaning-text" id="meaningText"></div>
         </div>
 
         <div class="answer-box">
-          <div style="font-size:12px; color:var(--pink4); margin-bottom:5px;">내 문장</div>
+          <div class="section-label">내 문장</div>
           <div class="token-row" id="answerRow"></div>
         </div>
 
         <div class="bank-box">
-          <div style="font-size:12px; color:var(--pink4); margin-bottom:5px;">단어 조각 (랜덤)</div>
+          <div class="section-label">단어 조각 (랜덤)</div>
           <div class="token-row" id="bankRow"></div>
         </div>
 
@@ -204,20 +397,36 @@
           <button class="btn soft" id="prevBtn">이전</button>
           <button class="btn soft" id="nextBtn">다음</button>
         </div>
-        <div id="resultBox"></div>
-      </main>
 
-      <aside>
-        <section class="card" style="margin-bottom:18px;">
-          <h3 style="margin:0 0 10px; color:var(--pink4);">💗 오답노트</h3>
-          <div id="wrongList" style="max-height:300px; overflow-y:auto;"></div>
+        <div id="resultBox"></div>
+      </section>
+
+      <aside style="display:grid;gap:18px;">
+        <section class="card">
+          <div class="title-row">
+            <div style="font-size:20px;font-weight:800;color:var(--pink4);">💗 오답노트</div>
+          </div>
+          <div class="wrong-list" id="wrongList"></div>
         </section>
 
         <section class="card">
-          <h3 style="margin:0 0 10px; color:var(--pink4);">➕ 카드 추가</h3>
-          <input class="input" id="newKo" placeholder="한국어 해석">
-          <textarea class="textarea" id="newJp" placeholder="일본어 문장 (마침표 포함)"></textarea>
-          <button class="btn primary" style="width:100%" id="addBtn">추가하기</button>
+          <div class="title-row">
+            <div style="font-size:20px;font-weight:800;color:var(--pink4);">➕ 암기 문장카드 추가</div>
+          </div>
+          <div class="add-form">
+            <input class="input" id="newCategory" value="마지막 시험 총정리대비!!" placeholder="카테고리 이름">
+            <input class="input" id="newKo" placeholder="한국어 해석">
+            <textarea class="textarea" id="newJp" placeholder="일본어 문장"></textarea>
+            <button class="btn primary full" id="addBtn">추가하기</button>
+          </div>
+          <div class="footer-tip">예시 카테고리: <b>마지막 시험 총정리대비!!</b> ✨</div>
+        </section>
+
+        <section class="card">
+          <div class="title-row">
+            <div style="font-size:20px;font-weight:800;color:var(--pink4);">📚 전체 문장 보기</div>
+          </div>
+          <div class="all-list" id="allList"></div>
         </section>
       </aside>
     </div>
@@ -228,12 +437,41 @@
       "1과": [
         { ko: "3kg나 살이 쪄버렸습니다.", jp: "３キロも太ってしまいました。" },
         { ko: "일본 드라마를 보고 있습니다.", jp: "日本のドラマを見ています。" },
-        { ko: "아침에 일어나서, 어머니께 메일을 보냈습니다.", jp: "朝起きて부터、母にメールを送りました。" }
+        { ko: "아침에 일어나서, 어머니께 메일을 보냈습니다.", jp: "朝起きてから、母にメールを送りました。" },
+        { ko: "대학생이 된 후에, 3kg나 살이 쪄버렸습니다.", jp: "大学生になってから、３キロも太ってしまいました。" },
+        { ko: "그가 오지 않아서 걱정했습니다.", jp: "彼が来なくて心配しました。" }
       ],
       "2과": [
         { ko: "다 같이 춤추기도 하고 불꽃놀이를 보기도 합니다.", jp: "みんなで踊ったり花火を見たりします。" },
-        { ko: "왼쪽으로 돌면 꽃집이 있습니다.", jp: "左に曲がると花屋があります。" }
-      ]
+        { ko: "교실과 도서관을 갔다가 오갔다 했습니다.", jp: "教室と図書館を行ったり来たりしました。" },
+        { ko: "돈이 있으면 컴퓨터를 사고 싶습니다.", jp: "お金があったらコンピューターを買いたいです。" },
+        { ko: "왼쪽으로 돌면 꽃집이 있습니다.", jp: "左に曲がると花屋があります。" },
+        { ko: "친구 집에 가기 전에 전화를 합니다.", jp: "友だちの家に行く前に電話をします。" },
+        { ko: "시험이 끝난 후에 놀러 가고 싶습니다.", jp: "テストが終わった後、遊びに行きたいです。" }
+      ],
+      "3과": [
+        { ko: "기념품을 너무 많이 샀습니다.", jp: "お土産を買いすぎました。" },
+        { ko: "다나카 씨는 저기에 앉아 있습니다.", jp: "田中さんはあそこに座っています。" },
+        { ko: "그 아래에 가격이 붙어 있습니다.", jp: "その下にねだんがつけてあります。" },
+        { ko: "이 씨의 펜은 쓰기 쉽네요.", jp: "イさんのペンは書きやすいですね。" },
+        { ko: "이 빵은 딱딱해서 먹기 어렵습니다.", jp: "このパンはかたくて食べにくいです。" },
+        { ko: "어제는 술을 너무 많이 마셨습니다.", jp: "昨日はお酒を飲みすぎました。" }
+      ],
+      "4과": [
+        { ko: "형편이 괜찮다면 보러 와 주세요.", jp: "都合がよければ見に来てください。" },
+        { ko: "머리가 아팠어요.", jp: "頭が痛かったんです。" },
+        { ko: "일본어는 매일 연습하면 잘하게 됩니다.", jp: "日本語は毎日練習すれば上手になります。" },
+        { ko: "너무 걱정하지 말고 즐겨 주세요.", jp: "あまり心配しないで楽しんでください。" },
+        { ko: "아침밥은 먹어야 합니다.", jp: "朝ご飯は食べなければなりません。" }
+      ],
+      "5과": [
+        { ko: "응원하러 와줘서 기뻤어요.", jp: "応援に来てくれてうれしかったです。" },
+        { ko: "모리 씨는 임 씨에게 책을 주었습니다.", jp: "森さんはイムさんに本をあげました。" },
+        { ko: "선배는 나에게 콘서트 티켓을 주었습니다.", jp: "先輩は私にコンサートチケットをくれました。" },
+        { ko: "기무라 씨에게 여행 선물을 받았습니다.", jp: "木村さんに旅行のお土産をもらいました。" },
+        { ko: "다음 주, 고베로 출장을 가게 되었습니다.", jp: "来週、神戸へ出張することになりました。" }
+      ],
+      "마지막 시험 총정리대비!!": []
     };
 
     let currentCategory = "1과";
@@ -242,152 +480,313 @@
     let answer = [];
     let wrongNotes = JSON.parse(localStorage.getItem("jp_wrong_notes") || "[]");
     let extraDeck = JSON.parse(localStorage.getItem("jp_extra_deck") || "{}");
+    let solved = JSON.parse(localStorage.getItem("jp_solved") || "{}");
 
-    // 문장을 조사와 단어로 쪼개는 함수
-    function splitJp(sentence) {
-      const text = sentence.replace(/[。？！]/g, "").trim();
-      const particles = ["から", "まで", "より", "だけ", "しか", "など", "ので", "のに", "でも", "は", "가", "を", "に", "へ", "で", "と", "も", "야", "の", "ね", "よ", "か", "な", "たり", "たら", "れば"];
-      
-      let tokens = [];
-      let i = 0;
-      while (i < text.length) {
-        let found = false;
-        for (let len = 2; len >= 1; len--) {
-          let part = text.substring(i, i + len);
-          if (particles.includes(part)) {
-            tokens.push(part);
-            i += len;
-            found = true;
+    function getDeck() {
+      const merged = JSON.parse(JSON.stringify(seedDeck));
+      Object.keys(extraDeck).forEach(key => {
+        if (!merged[key]) merged[key] = [];
+        merged[key] = merged[key].concat(extraDeck[key]);
+      });
+      return merged;
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function splitJapaneseSentence(sentence) {
+      const text = sentence.replace(/。/g, "").trim();
+      const particles = [
+        "から","まで","より","だけ","しか","など","ので","のに","でも","とか","って",
+        "は","が","を","に","へ","で","と","も","や","の","ね","よ","か","な","わ"
+      ];
+
+      const raw = text.match(/[一-龯々ぁ-んァ-ヶーA-Za-z0-9０-９]+|[、！？]/g) || [text];
+      const result = [];
+
+      raw.forEach((chunk) => {
+        if (/^[、！？]$/.test(chunk)) {
+          result.push(chunk);
+          return;
+        }
+
+        let rest = chunk;
+        let splitDone = false;
+
+        for (const p of particles) {
+          if (rest.endsWith(p) && rest.length > p.length) {
+            const body = rest.slice(0, -p.length);
+            if (body) result.push(body);
+            result.push(p);
+            splitDone = true;
             break;
           }
         }
-        if (!found) {
-          let nextP = text.length;
-          particles.forEach(p => {
-            let pos = text.indexOf(p, i);
-            if (pos !== -1 && pos < nextP) nextP = pos;
-          });
-          tokens.push(text.substring(i, nextP));
-          i = nextP;
-        }
-      }
-      return tokens.filter(t => t.length > 0);
+
+        if (!splitDone) result.push(rest);
+      });
+
+      return result.filter(Boolean);
     }
 
-    function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-
-    function getFullDeck() {
-      const d = {...seedDeck};
-      for(let k in extraDeck) d[k] = (d[k] || []).concat(extraDeck[k]);
-      return d;
+    function currentList() {
+      const deck = getDeck();
+      return deck[currentCategory] || [];
     }
 
-    function render() {
-      const deck = getFullDeck();
-      const list = deck[currentCategory] || [];
-      const card = list[currentIndex];
+    function currentCard() {
+      return currentList()[currentIndex] || null;
+    }
 
-      // 카테고리 탭
+    function makeId(category, index, jp) {
+      return `${category}__${index}__${jp}`;
+    }
+
+    function saveAll() {
+      localStorage.setItem("jp_wrong_notes", JSON.stringify(wrongNotes));
+      localStorage.setItem("jp_extra_deck", JSON.stringify(extraDeck));
+      localStorage.setItem("jp_solved", JSON.stringify(solved));
+    }
+
+    function renderTabs() {
       const tabs = document.getElementById("categoryTabs");
+      const categories = Object.keys(getDeck());
       tabs.innerHTML = "";
-      Object.keys(deck).forEach(cat => {
+      categories.forEach(cat => {
         const btn = document.createElement("button");
         btn.className = "tab-btn" + (cat === currentCategory ? " active" : "");
-        btn.innerText = cat;
-        btn.onclick = () => { currentCategory = cat; currentIndex = 0; initCard(); };
+        btn.textContent = cat;
+        btn.onclick = () => {
+          currentCategory = cat;
+          currentIndex = 0;
+          prepareCard();
+          render();
+        };
         tabs.appendChild(btn);
       });
-
-      if (!card) return;
-
-      document.getElementById("cardCounter").innerText = `${currentIndex + 1} / ${list.length}`;
-      document.getElementById("meaningText").innerText = card.ko;
-      document.getElementById("progressFill").style.width = `${((currentIndex + 1) / list.length) * 100}%`;
-
-      // 정답 영역
-      const aRow = document.getElementById("answerRow");
-      aRow.innerHTML = "";
-      answer.forEach((t, i) => {
-        const span = document.createElement("span");
-        span.className = "token";
-        span.innerText = t;
-        span.onclick = () => { bank.push(answer.splice(i, 1)[0]); render(); };
-        aRow.appendChild(span);
-      });
-
-      // 보기 영역
-      const bRow = document.getElementById("bankRow");
-      bRow.innerHTML = "";
-      bank.forEach((t, i) => {
-        const span = document.createElement("span");
-        span.className = "token";
-        span.innerText = t;
-        span.onclick = () => { answer.push(bank.splice(i, 1)[0]); render(); };
-        bRow.appendChild(span);
-      });
-
-      renderWrongNotes();
     }
 
-    function initCard() {
-      const deck = getFullDeck();
-      const card = deck[currentCategory][currentIndex];
-      if (card) {
-        bank = shuffle(splitJp(card.jp));
+    function prepareCard() {
+      const card = currentCard();
+      if (!card) {
+        bank = [];
         answer = [];
-        document.getElementById("resultBox").innerHTML = "";
+        return;
       }
-      render();
+      bank = shuffle(splitJapaneseSentence(card.jp));
+      answer = [];
+    }
+
+    function renderMain() {
+      const card = currentCard();
+      const counter = document.getElementById("cardCounter");
+      const meaning = document.getElementById("meaningText");
+      const answerRow = document.getElementById("answerRow");
+      const bankRow = document.getElementById("bankRow");
+      const resultBox = document.getElementById("resultBox");
+      const progressFill = document.getElementById("progressFill");
+      const progressText = document.getElementById("progressText");
+      const list = currentList();
+
+      if (!card) {
+        counter.textContent = "0 / 0";
+        meaning.textContent = "아직 카드가 없어! 오른쪽에서 문장을 추가해줘 💖";
+        answerRow.innerHTML = "";
+        bankRow.innerHTML = "";
+        resultBox.innerHTML = "";
+        progressFill.style.width = "0%";
+        progressText.textContent = "진도 0%";
+        return;
+      }
+
+      counter.textContent = `${currentIndex + 1} / ${list.length}`;
+      meaning.textContent = card.ko;
+      answerRow.innerHTML = "";
+      bankRow.innerHTML = "";
+      resultBox.innerHTML = "";
+
+      const solvedCount = list.filter((item, idx) => solved[makeId(currentCategory, idx, item.jp)]).length;
+      const progress = list.length ? Math.round((solvedCount / list.length) * 100) : 0;
+      progressFill.style.width = `${progress}%`;
+      progressText.textContent = `진도 ${progress}% · ${solvedCount}/${list.length}`;
+
+      if (!answer.length) {
+        const hint = document.createElement("div");
+        hint.className = "muted";
+        hint.textContent = "조각을 눌러서 여기에 순서대로 쌓아줘 🎀";
+        answerRow.appendChild(hint);
+      } else {
+        answer.forEach((token, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "token";
+          btn.textContent = token;
+          btn.onclick = () => {
+            bank.push(token);
+            answer.splice(idx, 1);
+            renderMain();
+          };
+          answerRow.appendChild(btn);
+        });
+      }
+
+      bank.forEach((token, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "token";
+        btn.textContent = token;
+        btn.onclick = () => {
+          answer.push(token);
+          bank.splice(idx, 1);
+          renderMain();
+        };
+        bankRow.appendChild(btn);
+      });
     }
 
     function renderWrongNotes() {
-      const box = document.getElementById("wrongList");
-      box.innerHTML = wrongNotes.length ? "" : "<div style='color:#ad7c95; font-size:13px;'>깨끗해요! 🫧</div>";
-      wrongNotes.forEach((n, i) => {
+      const wrap = document.getElementById("wrongList");
+      wrap.innerHTML = "";
+      if (!wrongNotes.length) {
+        wrap.innerHTML = '<div class="muted">아직 저장된 오답이 없어 💕</div>';
+        return;
+      }
+
+      wrongNotes.forEach((item, idx) => {
         const div = document.createElement("div");
         div.className = "wrong-item";
-        div.innerHTML = `<strong>${n.ko}</strong><br><small style="color:var(--pink4)">정답: ${n.jp}</small>`;
-        box.appendChild(div);
+        div.innerHTML = `
+          <div class="mini"><b>${item.category}</b></div>
+          <div style="margin-top:6px;font-weight:700;">해석: ${escapeHtml(item.ko)}</div>
+          <div class="mini" style="margin-top:8px;">정답</div>
+          <div>${escapeHtml(item.jp)}</div>
+          <div class="mini" style="margin-top:8px;">내 답</div>
+          <div>${escapeHtml(item.user || "")}</div>
+          <div style="margin-top:10px;"><button class="btn soft" data-wrong="${idx}">삭제</button></div>
+        `;
+        wrap.appendChild(div);
+      });
+
+      wrap.querySelectorAll("[data-wrong]").forEach(btn => {
+        btn.onclick = () => {
+          const idx = Number(btn.getAttribute("data-wrong"));
+          wrongNotes.splice(idx, 1);
+          saveAll();
+          renderWrongNotes();
+        };
       });
     }
 
-    document.getElementById("checkBtn").onclick = () => {
-      const card = getFullDeck()[currentCategory][currentIndex];
-      const userJp = answer.join("") + "。";
-      if (userJp === card.jp) {
-        document.getElementById("resultBox").innerHTML = "<div class='result correct'>정답이야! 멋져 태윤아! 🌟</div>";
-      } else {
-        document.getElementById("resultBox").innerHTML = `<div class='result wrong'>틀렸어! 정답: ${card.jp}</div>`;
-        if (!wrongNotes.find(n => n.jp === card.jp)) {
-          wrongNotes.unshift(card);
-          localStorage.setItem("jp_wrong_notes", JSON.stringify(wrongNotes));
-          renderWrongNotes();
-        }
+    function renderAllList() {
+      const listWrap = document.getElementById("allList");
+      listWrap.innerHTML = "";
+      currentList().forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = "all-item";
+        div.innerHTML = `
+          <div class="mini">${idx + 1}번</div>
+          <div style="font-weight:700;margin-top:4px;">${escapeHtml(item.ko)}</div>
+          <div style="margin-top:6px;color:var(--pink4);">${escapeHtml(item.jp)}</div>
+        `;
+        listWrap.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showResult(type, html) {
+      const resultBox = document.getElementById("resultBox");
+      resultBox.innerHTML = `<div class="result ${type}">${html}</div>`;
+    }
+
+    function checkAnswer() {
+      const card = currentCard();
+      if (!card) return;
+      const userAnswer = answer.join("") + "。";
+      const correct = userAnswer === card.jp;
+      const id = makeId(currentCategory, currentIndex, card.jp);
+
+      if (correct) {
+        solved[id] = true;
+        saveAll();
+        showResult("correct", `정답이야! 🌟<br>${escapeHtml(card.jp)}`);
+        renderMain();
+        return;
       }
-    };
 
-    document.getElementById("resetBtn").onclick = initCard;
-    document.getElementById("prevBtn").onclick = () => { if (currentIndex > 0) { currentIndex--; initCard(); } };
+      wrongNotes.unshift({
+        category: currentCategory,
+        ko: card.ko,
+        jp: card.jp,
+        user: userAnswer
+      });
+      saveAll();
+      renderWrongNotes();
+      showResult("wrong", `아깝다! 오답노트에 저장했어 💗<br><b>정답:</b> ${escapeHtml(card.jp)}`);
+    }
+
+    function addCard() {
+      const categoryInput = document.getElementById("newCategory");
+      const koInput = document.getElementById("newKo");
+      const jpInput = document.getElementById("newJp");
+      const cat = categoryInput.value.trim() || "마지막 시험 총정리대비!!";
+      const ko = koInput.value.trim();
+      let jp = jpInput.value.trim();
+      if (!ko || !jp) return;
+      if (!jp.endsWith("。")) jp += "。";
+
+      if (!extraDeck[cat]) extraDeck[cat] = [];
+      extraDeck[cat].push({ ko, jp });
+      saveAll();
+
+      currentCategory = cat;
+      currentIndex = 0;
+      koInput.value = "";
+      jpInput.value = "";
+      renderTabs();
+      prepareCard();
+      render();
+    }
+
+    function render() {
+      renderTabs();
+      renderMain();
+      renderWrongNotes();
+      renderAllList();
+    }
+
+    document.getElementById("checkBtn").onclick = checkAnswer;
+    document.getElementById("resetBtn").onclick = () => {
+      bank = shuffle(bank.concat(answer));
+      answer = [];
+      renderMain();
+    };
+    document.getElementById("prevBtn").onclick = () => {
+      if (currentIndex > 0) currentIndex -= 1;
+      prepareCard();
+      render();
+    };
     document.getElementById("nextBtn").onclick = () => {
-      const list = getFullDeck()[currentCategory];
-      if (currentIndex < list.length - 1) { currentIndex++; initCard(); }
+      if (currentIndex < currentList().length - 1) currentIndex += 1;
+      else currentIndex = 0;
+      prepareCard();
+      render();
     };
+    document.getElementById("addBtn").onclick = addCard;
 
-    document.getElementById("addBtn").onclick = () => {
-      const ko = document.getElementById("newKo").value;
-      const jp = document.getElementById("newJp").value;
-      if (!ko || !jp) return alert("내용을 입력해줘!");
-      if (!extraDeck["추가 문장"]) extraDeck["추가 문장"] = [];
-      extraDeck["추가 문장"].push({ ko, jp: jp.endsWith("。") ? jp : jp + "。" });
-      localStorage.setItem("jp_extra_deck", JSON.stringify(extraDeck));
-      currentCategory = "추가 문장";
-      currentIndex = extraDeck["추가 문장"].length - 1;
-      document.getElementById("newKo").value = "";
-      document.getElementById("newJp").value = "";
-      initCard();
-    };
-
-    initCard();
+    prepareCard();
+    render();
   </script>
 </body>
 </html>
